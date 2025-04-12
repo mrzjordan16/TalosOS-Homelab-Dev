@@ -1,6 +1,6 @@
 # 🚀 TalosOS Homelab Setup Guide
 
-![TalosOS Logo](https://raw.githubusercontent.com/siderolabs/talos/main/website/static/img/logo.svg)
+![TalosOS Logo](https://avatars.githubusercontent.com/u/13804887?s=200&v=4)
 
 This comprehensive guide will walk you through setting up a production-grade Kubernetes cluster using TalosOS. The setup includes one control plane node and one worker node, connected securely through Tailscale.
 
@@ -32,7 +32,7 @@ Before you begin, ensure you have:
 2. Create a bootable USB using the ISO
 3. Place the USB in the ISO folder
 
-![Bootable USB Creation](screenshots/bootable-usb.png)
+
 
 #### Tailscale Configuration
 1. Create a Tailscale account at [tailscale.com](https://tailscale.com)
@@ -77,7 +77,6 @@ disk="/disk/sda"
 4. Wait for installation to complete
 5. Verify kubelet status and connectivity
 
-![Control Plane Setup](screenshots/control-plane-setup.png)
 
 #### Kubernetes Bootstrap
 1. Run bootstrap script:
@@ -108,7 +107,6 @@ WORKER_NODE_TS_IP="100.63.xxx.xxx"
    ```
 3. Wait for installation to complete
 
-![Worker Node Setup](screenshots/worker-node-setup.png)
 
 ## ✅ Verification
 
@@ -164,10 +162,3 @@ talosctl logs -n $WORKER_NODE_IP
 | `WORKER_NODE_IP` | Worker node static IP | "192.168.1.101/24" |
 | `WORKER_NODE_TS_IP` | Worker node Tailscale IP | "100.63.xxx.xxx" |
 
-## 🤝 Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
