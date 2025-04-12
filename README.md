@@ -1,99 +1,173 @@
-# TalosOS Homelab Setup Guide
+# 🚀 TalosOS Homelab Setup Guide
 
-This guide will walk you through setting up a Kubernetes cluster using TalosOS with one control plane and one worker node.
+![TalosOS Logo](https://raw.githubusercontent.com/siderolabs/talos/main/website/static/img/logo.svg)
 
-## Prerequisites
+This comprehensive guide will walk you through setting up a production-grade Kubernetes cluster using TalosOS. The setup includes one control plane node and one worker node, connected securely through Tailscale.
 
-- Three physical machines (nodes) for control plane and worker
-- USB drive for installation
+## 📋 Prerequisites
+
+Before you begin, ensure you have:
+
+- Two physical machines (nodes) for control plane and worker
+- USB drive (8GB minimum) for installation
 - Access to router for static IP configuration
 - Tailscale account
+- Basic understanding of Kubernetes and networking concepts
 
-## Step 1: Initial Setup
+## 🛠️ Hardware Requirements
 
-1. **Create Bootable USB**
-   - Download the TalosOS ISO from the official website
-   - Create a bootable USB using the ISO
-   - Place the USB in the ISO folder
-   - A LAPTOP/REMOTE COMPUTER
+| Component | Control Plane | Worker Node |
+|-----------|--------------|-------------|
+| CPU       | 2+ cores     | 2+ cores    |
+| RAM       | 4GB+         | 4GB+        |
+| Storage   | 20GB+        | 20GB+       |
+| Network   | 1Gbps+       | 1Gbps+      |
 
-2. **Tailscale Setup**
-   - Create a Tailscale account if you don't have one
-   - Generate a new Tailscale Auth Key
-   - Update the `TS_AUTH_KEY` variable in `.env` file with your generated key
+## 🔄 Installation Steps
 
-3. **Network Configuration**
-   - Configure static IP on your router for both nodes
-   - Note down the following details for each node:
-     - Static IP address
-     - Gateway
-     - Network interface name
-     - Disk path
+### 1️⃣ Initial Setup
 
-## Step 2: Control Plane Setup (Node-1)
+#### Create Bootable USB
+1. Download the TalosOS ISO from [official website](https://www.talos.dev/latest/introduction/quickstart/)
+2. Create a bootable USB using the ISO
+3. Place the USB in the ISO folder
 
-1. **Environment Configuration**
-   - Update the following variables in `.env`:
-     - `CP_IP`: Static LAN IP for control plane
-     - `CP_HOSTNAME`: Desired hostname for control plane
-     - `Gateway`: Router gateway (ROUTER IP)
-     - `Interface`: Network interface name (NETWORK INTERFACE)
-     - `disk`: Disk path (e.g., "/disk/sda")
-     - Run `Pre-req-#0.sh` to install prerequisites (talosctl,kubectl and yq)
-      
-2. **Installation Process**
-   - Plug the USB into Node-1
-   - Execute `Intialize-ControlPlane-#2.sh` to install TalosOS
-   - Wait for installation to complete and kubelet to reach ready state
-   - Verify connectivity status is OK
+![Bootable USB Creation](screenshots/bootable-usb.png)
 
-3. **Kubernetes Bootstrap**
-   - Run `Bootstrap-K8s-#2.sh` to provision Kubernetes control plane
-   - Wait for the process to complete
+#### Tailscale Configuration
+1. Create a Tailscale account at [tailscale.com](https://tailscale.com)
+2. Generate a new Tailscale Auth Key
+3. Update the `TS_AUTH_KEY` variable in `.env` file
 
-## Step 3: Worker Node Setup (Node-2)
+```bash
+TS_AUTH_KEY="tskey-auth-XXX-XXXX-XXXXX-XXXXXXX-XXXXX"
+```
 
-1. **Environment Configuration**
-   - Update the following variables in `.env`:
-     - `WORKER_NODE_IP`: Static IP for worker node
-     - `WORKER_NODE_TS_IP`: Tailscale IP for worker node
+#### Network Setup
+1. Configure static IP on your router for both nodes
+2. Document the following details for each node:
+   - Static IP address
+   - Gateway
+   - Network interface name
+   - Disk path
 
-2. **Installation Process**
-   - Plug the USB into Node-2
-   - Execute `Intialize-WorkerNode-#3.sh`
-   - Wait for the installation to complete
+### 2️⃣ Control Plane Setup (Node-1)
 
-## Verification
+#### Environment Configuration
+Update the following variables in `.env`:
 
-After completing all steps, you should have:
-- A running Kubernetes control plane on Node-1
-- A worker node on Node-2
-- Both nodes connected through Tailscale
-- A fully functional Kubernetes cluster
+```bash
+CP_IP="xxx.xxx.xxx.xxx/24"
+CP_HOSTNAME="k8s-cp-1"
+Gateway="xxx.xxx.xxx.xxx"
+Interface="eth0"
+disk="/disk/sda"
+```
 
-## Troubleshooting
+#### Installation Process
+1. Plug the USB into Node-1
+2. Run prerequisites:
+   ```bash
+   ./Pre-req-#0.sh
+   ```
+3. Initialize control plane:
+   ```bash
+   ./Intialize-ControlPlane-#2.sh
+   ```
+4. Wait for installation to complete
+5. Verify kubelet status and connectivity
 
-If you encounter any issues:
-1. Verify all environment variables are correctly set
-2. Check network connectivity between nodes
-3. Ensure Tailscale is properly configured on both nodes
-4. Verify disk paths and network interfaces are correct
+![Control Plane Setup](screenshots/control-plane-setup.png)
 
-## Environment Variables Reference
+#### Kubernetes Bootstrap
+1. Run bootstrap script:
+   ```bash
+   ./Bootstrap-K8s-#2.sh
+   ```
+2. Wait for the process to complete
+3. Verify cluster status:
+   ```bash
+   kubectl get nodes
+   ```
 
-| Variable | Description |
-|----------|-------------|
-| `TALOSCTL_VERSION` | Version of talosctl |
-| `KUBECTL_VERSION` | Version of kubectl |
-| `CP_IP` | Control plane static IP |
-| `CONTROLPLANE_TS_IP` | Control plane Tailscale IP |
-| `CP_HOSTNAME` | Control plane hostname |
-| `Gateway` | Router gateway |
-| `Interface` | Network interface name |
-| `disk` | Disk path for installation |
-| `TS_AUTH_KEY` | Tailscale authentication key |
-| `USB_INSTALLED` | USB installation flag |
-| `MAIN_DIRECTORY` | Main project directory |
-| `image` | TalosOS installer image |
-| `WORKER_NODE_IP` | Worker node static IP |
-| `WORKER_NODE_TS_IP` | Worker node Tailscale IP |
+### 3️⃣ Worker Node Setup (Node-2)
+
+#### Environment Configuration
+Update the following variables in `.env`:
+
+```bash
+WORKER_NODE_IP="xxx.xxx.xxx.xxx/24"
+WORKER_NODE_TS_IP="100.63.xxx.xxx"
+```
+
+#### Installation Process
+1. Plug the USB into Node-2
+2. Run worker node initialization:
+   ```bash
+   ./Intialize-WorkerNode-#3.sh
+   ```
+3. Wait for installation to complete
+
+![Worker Node Setup](screenshots/worker-node-setup.png)
+
+## ✅ Verification
+
+After completing all steps, verify your setup:
+
+1. Check cluster status:
+   ```bash
+   kubectl get nodes
+   ```
+2. Verify Tailscale connectivity:
+   ```bash
+   tailscale status
+   ```
+3. Test pod deployment:
+   ```bash
+   kubectl run nginx --image=nginx
+   kubectl get pods
+   ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Installation fails | Check USB drive and ISO integrity |
+| Network connectivity issues | Verify static IP and gateway settings |
+| Tailscale connection problems | Regenerate auth key and update .env |
+| Kubernetes bootstrap failure | Check control plane status and logs |
+
+### Log Collection
+```bash
+# Control plane logs
+talosctl logs -n $CP_IP
+
+# Worker node logs
+talosctl logs -n $WORKER_NODE_IP
+```
+
+## 📚 Environment Variables Reference
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `TALOSCTL_VERSION` | Version of talosctl | "1.9.2" |
+| `KUBECTL_VERSION` | Version of kubectl | "1.30.1" |
+| `CP_IP` | Control plane static IP | "192.168.1.100/24" |
+| `CONTROLPLANE_TS_IP` | Control plane Tailscale IP | "100.63.xxx.xxx" |
+| `CP_HOSTNAME` | Control plane hostname | "k8s-cp-1" |
+| `Gateway` | Router gateway | "192.168.1.1" |
+| `Interface` | Network interface name | "eth0" |
+| `disk` | Disk path | "/disk/sda" |
+| `TS_AUTH_KEY` | Tailscale auth key | "tskey-auth-XXX-XXXX-XXXXX-XXXXXXX-XXXXX" |
+| `WORKER_NODE_IP` | Worker node static IP | "192.168.1.101/24" |
+| `WORKER_NODE_TS_IP` | Worker node Tailscale IP | "100.63.xxx.xxx" |
+
+## 🤝 Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
