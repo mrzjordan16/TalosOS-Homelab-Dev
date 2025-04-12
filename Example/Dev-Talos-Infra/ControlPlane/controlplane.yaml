@@ -1,0 +1,112 @@
+version: v1alpha1
+debug: false
+persist: true
+machine:
+  type: controlplane
+  token: vwxxx.xxxxxx
+  ca:
+    crt: LS0tLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxg==
+    key: LS0tLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxg==
+    - 192.168.10.47  (control plane ip)
+    - 100.x.x.x  (tailscale ip)
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.30.1
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+  network:
+    hostname: homelab-cluster-1
+    nameservers:
+      - 8.8.8.8  (google dns)
+      - 8.8.4.4  (google dns)
+      - 192.168.10.1  (gateway ip)
+    interfaces:
+      - interface: eno1
+        addresses:
+          - 192.168.10.47/24  (control plane ip)
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 192.168.10.1  (gateway ip)
+        dhcp: false
+  install:
+    disk: /dev/sda  (disk)
+    image: factory.talos.dev/installer/077514df2c1b6436460bc60faabc976687b16193b8a1290fda4366c69024fec2:v1.9.5  (talos image)
+    wipe: true
+  features:
+    rbac: true
+    stableHostname: true
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    kubePrism:
+      enabled: true
+      port: 7445  (kubePrism port)
+    hostDNS:
+      enabled: true
+  time:
+    servers:
+      - time.google.com  (time server)
+cluster:
+  id: dLsKzHkS1b5jFxxxx_xXX=  (cluster id)
+  secret: 4ND1N+xxxxxxxxxxxxxxxxxxxxxxx= (cluster secret)
+  controlPlane:
+    endpoint: https://192.168.10.47:6443  (control plane endpoint)
+  clusterName: homelab-cluster-1
+  network:
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.244.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  token: 8bk8gj.jcryiedqj8ro6qfh
+  secretboxEncryptionSecret: Gs0Lgb189ClD1l7Qw6G5VRDlq9fdKcjkvui+fKFEi5c=
+  ca:
+    crt: LS0tLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxg==
+    key: XXX-XXXX-XXXXX-XXXXXXX-XXXXX
+  aggregatorCA:
+   crt:  LS0tLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxg==
+    key: XXX-XXXX-XXXXX-XXXXXXX-XXXXX
+  serviceAccount:
+    key: XXX-XXXX-XXXXX-XXXXXXX-XXXXX
+  apiServer:
+    image: registry.k8s.io/kube-apiserver:v1.30.1
+    certSANs:
+      - 192.168.10.47
+      - 100.xx.xx.x
+    disablePodSecurityPolicy: true
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+          defaults:
+            audit: restricted
+            audit-version: latest
+            enforce: baseline
+            enforce-version: latest
+            warn: restricted
+            warn-version: latest
+          exemptions:
+            namespaces:
+              - kube-system
+            runtimeClasses: []
+            usernames: []
+          kind: PodSecurityConfiguration
+    auditPolicy:
+      apiVersion: audit.k8s.io/v1
+      kind: Policy
+      rules:
+        - level: Metadata
+  controllerManager:
+    image: registry.k8s.io/kube-controller-manager:v1.30.1
+  proxy:
+    image: registry.k8s.io/kube-proxy:v1.30.1
+  scheduler:
+    image: registry.k8s.io/kube-scheduler:v1.30.1
+  discovery:
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: true
+      service: {}
+  etcd:
+    ca:
+      crt: LS0tLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxg==
+      key: XXX-XXXX-XXXXX-XXXXXXX-XXXXX

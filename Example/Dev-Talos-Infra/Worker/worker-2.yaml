@@ -1,0 +1,68 @@
+version: v1alpha1
+debug: false
+persist: true
+machine:
+  type: worker
+  token: vw0c3z.whnaujyz6bg473pl
+  ca:
+    crt: LS0tLS1CRxxxxxxxxxxxxxxxxxxxxxxxxxx==
+    key: ""
+  certSANs:
+    - 192.168.10.17
+    - 100.xx.xx.x
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.30.1
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+  network:
+    hostname: K8S-WK-1
+    nameservers:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 192.168.10.1
+    interfaces:
+      - interface: eno1
+        addresses:
+          - 192.168.10.9/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 192.168.10.1
+        dhcp: false
+  install:
+    disk: /dev/sdb
+    image: factory.talos.dev/installer/708747e350d604ae9e57227d8dcf274091453ddb1097b765d4ea8884f1992c1f:v1.9.5
+    wipe: true
+  features:
+    rbac: true
+    stableHostname: true
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    kubePrism:
+      enabled: true
+      port: 7445
+    hostDNS:
+      enabled: true
+  time:
+    servers:
+      - time.google.com
+cluster:
+  id: dLsKzHkS1b5jF_Az6X5kPKADXa6qr1KzRCakGsNXKqo=
+  secret: 4ND1N+gz8GoqUelQa/jt+5IKaLZC4aWRk5Dq5qzDWDQ=
+  controlPlane:
+    endpoint: https://192.168.10.47:6443
+  network:
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.244.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  token: 8bzxxxgj.xxxxxxxxxxxxxxxxxxxxxxxxxx
+  ca:
+    crt: LLS0tLS1CRxxxxxxxxxxxxxxxxxxxxxxxxxx==
+    key: ""
+  discovery:
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: true
+      service: {}
