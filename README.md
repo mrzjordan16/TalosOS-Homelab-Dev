@@ -2,13 +2,16 @@
 
 ![TalosOS Logo](https://avatars.githubusercontent.com/u/13804887?s=200&v=4)
 
-This comprehensive guide will walk you through setting up a production-grade Kubernetes cluster using TalosOS. The setup includes one control plane node and one worker node, connected securely through Tailscale.
+This comprehensive guide will walk you through setting up a production-grade Kubernetes cluster using TalosOS. The setup includes one control plane node and two worker node, connected securely through Tailscale. Since TalosOS is immutable, all management operations are performed from a separate remote machine.
 
 ## 📋 Prerequisites
 
 Before you begin, ensure you have:
 
-- Two physical machines (nodes) for control plane and worker
+- Four physical machines:
+  - One remote management machine (laptop/desktop)
+  - One control plane node
+  - Two worker node
 - USB drive (8GB minimum) for installation
 - Access to router for static IP configuration
 - Tailscale account
@@ -16,6 +19,16 @@ Before you begin, ensure you have:
 
 ## 🛠️ Hardware Requirements
 
+### Remote Management Machine
+| Component | Requirements |
+|-----------|-------------|
+| OS        | Linux/macOS/Windows |
+| CPU       | 2+ cores    |
+| RAM       | 4GB+        |
+| Storage   | 10GB+       |
+| Network   | Stable internet connection |
+
+### Cluster Nodes
 | Component | Control Plane | Worker Node |
 |-----------|--------------|-------------|
 | CPU       | 2+ cores     | 2+ cores    |
@@ -27,12 +40,19 @@ Before you begin, ensure you have:
 
 ### 1️⃣ Initial Setup
 
+#### Remote Management Machine Setup
+1. Install required tools on your remote machine:
+   ```bash
+   # Install talosctl, kubectl, and yq
+   ./Pre-req-#0.sh
+   ```
+2. Configure environment variables in `.env` file
+3. Ensure stable network connectivity to both cluster nodes
+
 #### Create Bootable USB
 1. Download the TalosOS ISO from [official website](https://www.talos.dev/latest/introduction/quickstart/)
 2. Create a bootable USB using the ISO
 3. Place the USB in the ISO folder
-
-
 
 #### Tailscale Configuration
 1. Create a Tailscale account at [tailscale.com](https://tailscale.com)
@@ -77,7 +97,6 @@ disk="/disk/sda"
 4. Wait for installation to complete
 5. Verify kubelet status and connectivity
 
-
 #### Kubernetes Bootstrap
 1. Run bootstrap script:
    ```bash
@@ -106,7 +125,6 @@ WORKER_NODE_TS_IP="100.63.xxx.xxx"
    ./Intialize-WorkerNode-#3.sh
    ```
 3. Wait for installation to complete
-
 
 ## ✅ Verification
 
@@ -161,4 +179,14 @@ talosctl logs -n $WORKER_NODE_IP
 | `TS_AUTH_KEY` | Tailscale auth key | "tskey-auth-XXX-XXXX-XXXXX-XXXXXXX-XXXXX" |
 | `WORKER_NODE_IP` | Worker node static IP | "192.168.1.101/24" |
 | `WORKER_NODE_TS_IP` | Worker node Tailscale IP | "100.63.xxx.xxx" |
+
+## ℹ️ Important Notes
+
+- All management operations (talosctl, kubectl) must be performed from the remote management machine
+- The cluster nodes run TalosOS in immutable mode, meaning:
+  - No direct SSH access to nodes
+  - All configuration changes must be made through talosctl
+  - System updates are atomic and require reboot
+- The remote machine serves as the single point of management for the entire cluster
+- Ensure the remote machine has reliable network connectivity to both cluster nodes
 
