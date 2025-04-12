@@ -50,7 +50,10 @@ Before you begin, ensure you have:
 3. Ensure stable network connectivity to both cluster nodes
 
 #### Create Bootable USB
-1. Download the TalosOS ISO from [official website](https://www.talos.dev/latest/introduction/quickstart/)
+1. Obtain TalosOS ISO using one of these methods:
+   - Download from the [official website](https://www.talos.dev/latest/introduction/quickstart/)
+   - Use the pre-uploaded ISO from `ISO/metal-amd64.iso`
+   - Create a customized ISO using the [Talos Factory](https://factory.talos.dev/)
 2. Create a bootable USB using the ISO
 3. Place the USB in the ISO folder
 
